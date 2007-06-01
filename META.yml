@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Rose-DBx-Object-InternalPager
-version:             0.01
+version:             0.02
 abstract:            Throttle Rose DB Iterator Fetching
 license:             ~
 generated_by:        ExtUtils::MakeMaker version 6.31
@@ -9,6 +9,8 @@ requires:
     DBI:                           1
     File::Temp:                    0
     Log::Log4perl:                 1
+    Rose::DB:                      0.731
+    Rose::DB::Object:              0.758
     Test::More:                    0
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.2.html

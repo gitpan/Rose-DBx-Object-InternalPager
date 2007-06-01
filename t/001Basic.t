@@ -7,7 +7,7 @@ use strict;
 
 use Test::More;
 use Rose::DBx::Object::InternalPager;
-use File::Temp qw(tempfile);
+use File::Temp qw(tempdir);
 use DBI;
 use Log::Log4perl qw(:easy);
 
@@ -24,9 +24,10 @@ if($@) {
 
 plan tests => 4;
 
-our($fh, $filename) = tempfile(UNLINK => 1);
-#END { unlink $filename };
+our $dir = tempdir(CLEANUP => 1);
+our $filename = "$dir/foo.db";
 
+DEBUG "Connecting to DB in file $filename";
 my $dbh = DBI->connect("dbi:SQLite:dbname=$filename", "", "",
   { RaiseError => 1});
 ok($dbh, "Connected to database");
