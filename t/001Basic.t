@@ -22,7 +22,7 @@ if($@) {
     exit 0;
 }
 
-plan tests => 4;
+plan tests => 6;
 
 our $dir = tempdir(CLEANUP => 1);
 our $filename = "$dir/foo.db";
@@ -97,3 +97,38 @@ while(my $product = $pager->next()) {
 }
 
 is($count, 90, "Found 90 records total");
+
+$pager = Rose::DBx::Object::InternalPager->new(
+    class_name     => "Product",
+    manager_method => "get_products",
+    manager_options => { 
+      query => [ id => { gt => 10 } ],
+      sort_by       => 'id',
+    },
+    pager_options => {
+        start_page => 1,
+        per_page   => 100,
+    },
+);
+
+my $product = $pager->next();
+
+is($product->id(), 11, "Found product ID 11");
+
+$pager = Rose::DBx::Object::InternalPager->new(
+    class_name     => "Product",
+    manager_method => "get_products",
+    manager_options => { 
+      query => [ id => { gt => 10 } ],
+      sort_by       => 'id',
+    },
+    pager_options => {
+        start_page => 2,
+#        per_page   => 50,
+    },
+);
+
+$product = $pager->next();
+
+is($product->id(), 61, "Found product ID 61");
+

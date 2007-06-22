@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Log::Log4perl qw(:easy);
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 
 ###########################################
 sub new {
@@ -13,9 +13,14 @@ sub new {
     my($class, %options) = @_;
 
     my $self = {
-        pager_options => { per_page => 50 },
         %options,
     };
+
+    $self->{pager_options}->{per_page} = 50 unless defined
+        $self->{pager_options}->{per_page};
+
+    $self->{pager_options}->{start_page} = 1 unless defined
+        $self->{pager_options}->{start_page};
 
     for my $param (qw(manager_options class_name manager_method)) {
         if(!defined $options{ $param}) {
@@ -55,14 +60,21 @@ sub make_pager {
     my $iterator_method = "${method}_iterator";
 
     my $per_page        = $options->{per_page};
-    my $page            = 1;
+    my $page            = $options->{start_page};
     my $page_items_done = 0;
+
+    if(!defined $per_page) {
+       LOGDIE "Parameter per_page not defined";
+    }
+    if(!defined $page) {
+       LOGDIE "Parameter start_page not defined";
+    }
 
     DEBUG "Creating first pager iterator ",
           "class=$class per_page=$per_page";
 
     my $itr = $manager_class->$iterator_method(
-        page     => 1, 
+        page     => $page, 
         per_page => $per_page,
         %$moptions,
     );
@@ -142,8 +154,8 @@ While normally, you would call
 
     my $itr = Namespace::Author::Manager->get_authors_iterator(...);
 
-to get an iterator object which offers a C<next()> method to get
-from one database record to the next, with C<Rose::DBx::Object::InternalPager>, 
+to get an iterator object which offers a C<next()> method to move
+from one database record to the next. With C<Rose::DBx::Object::InternalPager>, 
 you call
 
     my $pager = Rose::DBx::Object::InternalPager->new(
@@ -152,7 +164,7 @@ you call
         # ...
     );
 
-which returns a pager object that can be used to iteratate over
+which returns a pager object that can be used to iterate over
 all database records found via
 
     while(my $author = $pager->next()) {
@@ -182,6 +194,17 @@ optional C<pager_options> hash:
         # ...
         pager_options => {
           per_page => 100,
+        },
+    );
+
+By default, the pager starts at page 1. This value can
+be modified by setting the C<start_page> parameter in the 
+optional C<pager_options> hash:
+
+    my $pager = Rose::DBx::Object::InternalPager->new(
+        # ...
+        pager_options => {
+          start_page => 17,
         },
     );
 

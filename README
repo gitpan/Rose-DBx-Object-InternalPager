@@ -1,5 +1,5 @@
 ######################################################################
-    Rose::DBx::Object::InternalPager 0.02
+    Rose::DBx::Object::InternalPager 0.03
 ######################################################################
 
 NAME
@@ -46,9 +46,9 @@ DESCRIPTION
 
         my $itr = Namespace::Author::Manager->get_authors_iterator(...);
 
-    to get an iterator object which offers a "next()" method to get from one
-    database record to the next, with "Rose::DBx::Object::InternalPager",
-    you call
+    to get an iterator object which offers a "next()" method to move from
+    one database record to the next. With
+    "Rose::DBx::Object::InternalPager", you call
 
         my $pager = Rose::DBx::Object::InternalPager->new(
             class_name     => "Namespace::Author", # Note: no 'Manager'
@@ -56,7 +56,7 @@ DESCRIPTION
             # ...
         );
 
-    which returns a pager object that can be used to iteratate over all
+    which returns a pager object that can be used to iterate over all
     database records found via
 
         while(my $author = $pager->next()) {
@@ -85,6 +85,16 @@ DESCRIPTION
             # ...
             pager_options => {
               per_page => 100,
+            },
+        );
+
+    By default, the pager starts at page 1. This value can be modified by
+    setting the "start_page" parameter in the optional "pager_options" hash:
+
+        my $pager = Rose::DBx::Object::InternalPager->new(
+            # ...
+            pager_options => {
+              start_page => 17,
             },
         );
 
